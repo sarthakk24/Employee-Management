@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import SortBar from "../../components/mainPageComponents/SortBar";
 import Cards from "../../components/mainPageComponents/Cards";
-//new
+
+var fullData = [];
 
 const Main = () => {
   const [updatedData, setData] = useState([]);
@@ -15,25 +16,12 @@ const Main = () => {
       });
 
       const newData = await response.json();
+      fullData = newData.result;
       setData(newData.result);
     }
 
     getData();
   }, []);
-
-  const refreshFnc = () => {
-    async function getData() {
-      const response = await fetch(`${baseUrl}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-      });
-
-      const newData = await response.json();
-      setData(newData.result);
-    }
-
-    getData();
-  };
 
   const paginationHandlers = (range) => {
     setData(updatedData.slice(range[0], range[1]));
@@ -41,13 +29,14 @@ const Main = () => {
 
   const searchHandler = (upD) => {
     setData(upD);
+    
   };
 
   const filteredData = (type) => {
     const info =
       type === "Everyone"
-        ? updatedData
-        : updatedData.filter((el) => el.role === type);
+        ? fullData
+        : fullData.filter((el) => el.role === type);
 
     return info;
   };
@@ -67,7 +56,7 @@ const Main = () => {
           pagFnc={paginationHandlers}
           searchFnc={searchHandler}
           data={updatedData}
-          refreshFnc={refreshFnc}
+          fullData={fullData}
         ></SortBar>
       </Container>
       <Container fluid>
